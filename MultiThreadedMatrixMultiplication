@@ -1,0 +1,45 @@
+"
+
+```python
+import threading
+from random import randint
+
+def generate_matrix(n, m):
+    return [[randint(1, 100) for _ in range(m)] for _ in range(n)]
+
+def worker(rowA, rowB, output_matrix, row_index):
+    for i in range(len(rowB[0])):
+        output_matrix[row_index][i] = sum([rowA[j] * rowB[j][i] for j in range(len(rowA))])
+
+def matrix_mult(matrix_a, matrix_b):
+    if len(matrix_a[0]) != len(matrix_b):
+        raise ValueError(""Incompatible matrices for multiplication"")
+    
+    result = [[0 for _ in range(len(matrix_b[0]))] for _ in range(len(matrix_a))]
+    threads = []
+
+    for index, row in enumerate(matrix_a):
+        thread = threading.Thread(target=worker, args=(row, matrix_b, result, index))
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    return result
+
+if __name__ == ""__main__"":
+    m1 = generate_matrix(3, 3)
+    m2 = generate_matrix(3, 3)
+    result_matrix = matrix_mult(m1, m2)
+    print(""Matrix A:"")
+    for row in m1:
+        print(row)
+    print(""\nMatrix B:"")
+    for row in m2:
+        print(row)
+    print(""\nResult (A x B):"")
+    for row in result_matrix:
+        print(row)
+```
+"
